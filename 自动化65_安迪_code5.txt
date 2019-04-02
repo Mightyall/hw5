@@ -1,0 +1,330 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import cv2
+from PIL import Image
+from numpy import *
+from scipy.fftpack import fft, ifft
+import math
+
+
+def GLTF(img_test,d):
+
+	m= img_test.shape[0]
+	n= img_test.shape[1]
+	img_test2=np.zeros((m,n))
+	for i in range (m):
+		for j in range (n):
+			img_test2[i,j]=img_test[i,j]
+	plt.imshow(img_test2 , cmap='gray')
+	plt.show()
+		
+	P = 2*m
+	Q= 2*n
+
+
+	#zeros pedding
+	fp= np.zeros((P,Q))
+	for i in range (m):
+		for j in range (n):
+			fp[i,j]=img_test2[i,j]
+
+
+	#DFT & Middle
+	F1= np.fft.fft2(fp)
+	F1=np.fft.fftshift(F1)
+	
+	plt.imshow(np.log(abs(F1)),cmap='gray')
+	plt.show()
+
+	# Gaussin's creation
+	Gau = np.zeros((P,Q))
+	for u in range (P) :
+		for v in range (Q) :
+			temp=((u-P/2)**2+(v-Q/2)**2)**0.5
+			Gau[u,v]=exp((-temp)**2/(2*d*d)**2)
+
+	# starting filtering
+	G=np.zeros((m,n))
+	G=multiply(F1,Gau)
+
+
+	plt.imshow(np.log(abs(G)),cmap='gray')
+	plt.show()
+
+	#IDFT & Middle
+	G=np.fft.ifftshift(G)
+	g= np.fft.ifft2(G)
+	img_out=g[0:m+1,0:n+1]
+	img_out_real=img_out.real
+	plt.imshow(np.abs(img_out_real),cmap='gray')
+	plt.show()
+
+def BW_LP(img_test,d,N):
+	m= img_test.shape[0]
+	n= img_test.shape[1]
+	img_test2=np.zeros([m,n],np.uint8)
+	for i in range (m):
+		for j in range (n):
+			img_test2[i,j]=img_test[i,j]
+	plt.imshow(img_test2 , cmap='gray')
+	plt.show()
+		
+	P = 2*m
+	Q= 2*n
+
+
+	#zeros pedding
+	fp= np.zeros((P,Q))
+	for i in range (m):
+		for j in range (n):
+			fp[i,j]=img_test2[i,j]
+
+
+	#DFT & Middle
+	F1= np.fft.fft2(fp)
+	F1=np.fft.fftshift(F1)
+	
+	plt.imshow(np.log(abs(F1)),cmap='gray')
+	plt.show()
+
+	# BW's creation
+	BW=np.zeros((P,Q))
+	for u in range (P) :
+		for v in range (Q) :
+			temp=((u-P/2)**2+(v-Q/2)**2)**0.5
+			BW[u,v]=1.0/(1+(temp/d)**(2*N))
+
+	# starting filtering
+	G=np.zeros((m,n))
+	G=multiply(F1,BW)
+
+
+	plt.imshow(np.log(abs(G)),cmap='gray')
+	plt.show()
+
+	#IDFT & Middle
+	G=np.fft.ifftshift(G)
+	g= np.fft.ifft2(G)
+	img_out=g[0:m+1,0:n+1]
+	img_out_real=img_out.real
+	plt.imshow(np.abs(img_out_real),cmap='gray')
+	plt.show()
+
+def BW_HP(img_test,d,N):
+	m= img_test.shape[0]
+	n= img_test.shape[1]
+	img_test2=np.zeros([m,n],np.uint8)
+	for i in range (m):
+		for j in range (n):
+			img_test2[i,j]=img_test[i,j]
+	plt.imshow(img_test2 , cmap='gray')
+	plt.show()
+		
+	P = 2*m
+	Q= 2*n
+
+
+	#zeros pedding
+	fp= np.zeros((P,Q))
+	for i in range (m):
+		for j in range (n):
+			fp[i,j]=img_test2[i,j]
+
+
+	#DFT & Middle
+	F1= np.fft.fft2(fp)
+	F1=np.fft.fftshift(F1)
+	
+	plt.imshow(np.log(abs(F1)),cmap='gray')
+	plt.show()
+
+	# BW's creation
+	BW=np.zeros((P,Q))
+	for u in range (P) :
+		for v in range (Q) :
+			temp=((u-P/2)**2+(v-Q/2)**2)**0.5
+			if temp != 0:
+				BW[u,v]= (1.0/(1+(d/temp)**(2*N)))
+			else :
+				BW[u,v]=10000
+
+	# starting filtering
+	G=np.zeros((m,n))
+	G=multiply(F1,BW)
+
+
+	plt.imshow(np.log(abs(G)),cmap='gray')
+	plt.show()
+
+	#IDFT & Middle
+	G=np.fft.ifftshift(G)
+	g= np.fft.ifft2(G)
+	img_out=g[0:m+1,0:n+1]
+	img_out_real=img_out.real
+	plt.imshow(np.abs(img_out_real),cmap='gray')
+	plt.show()
+
+def GLTF_HP(img_test,d):
+
+	m= img_test.shape[0]
+	n= img_test.shape[1]
+	img_test2=np.zeros((m,n))
+	for i in range (m):
+		for j in range (n):
+			img_test2[i,j]=img_test[i,j]
+	plt.imshow(img_test2 , cmap='gray')
+	plt.show()
+		
+	P = 2*m
+	Q= 2*n
+
+
+	#zeros pedding
+	fp= np.zeros((P,Q))
+	for i in range (m):
+		for j in range (n):
+			fp[i,j]=img_test2[i,j]
+
+
+	#DFT & Middle
+	F1= np.fft.fft2(fp)
+	F1=np.fft.fftshift(F1)
+	
+	plt.imshow(np.log(abs(F1)),cmap='gray')
+	plt.show()
+
+	# Gaussin's creation
+	Gau = np.zeros((P,Q))
+	for u in range (P) :
+		for v in range (Q) :
+			temp=((u-P/2)**2+(v-Q/2)**2)**0.5
+			Gau[u,v]=1-exp((-temp)**2/(2*d*d)**2)
+
+	# starting filtering
+	G=np.zeros((m,n))
+	G=multiply(F1,Gau)
+
+
+	plt.imshow(np.log(abs(G)),cmap='gray')
+	plt.show()
+
+	#IDFT & Middle
+	G=np.fft.ifftshift(G)
+	g= np.fft.ifft2(G)
+	img_out=g[0:m+1,0:n+1]
+	img_out_real=img_out.real
+	plt.imshow(np.abs(img_out_real),cmap='gray')
+	plt.show()
+
+def Lap_HP(img_test,c):
+
+	m= img_test.shape[0]
+	n= img_test.shape[1]
+	img_test2=np.zeros((m,n))
+	for i in range (m):
+		for j in range (n):
+			img_test2[i,j]=img_test[i,j]
+	plt.imshow(img_test2 , cmap='gray')
+	plt.show()
+		
+	P = 2*m
+	Q= 2*n
+
+
+	#zeros pedding
+	fp= np.zeros((P,Q))
+	for i in range (m):
+		for j in range (n):
+			fp[i,j]=img_test2[i,j]
+
+
+	#DFT & Middle
+	F1= np.fft.fft2(fp)
+	F1=np.fft.fftshift(F1)
+	
+	plt.imshow(np.log(abs(F1)),cmap='gray')
+	plt.show()
+
+	# Laplace's HP Filter's creation
+	L = np.zeros((P,Q))
+	for u in range (P) :
+		for v in range (Q) :
+			temp=((u-P/2)**2+(v-Q/2)**2)
+			L[u,v]=1+(4*math.pi**2)*temp
+
+	# starting filtering
+	G=np.zeros((m,n))
+	#G=multiply(F1,L)
+	G= F1 * L
+
+
+	plt.imshow(np.log(abs(G)),cmap='gray')
+	plt.show()
+
+	#IDFT & Middle
+	G=np.fft.ifftshift(G)
+	g= np.fft.ifft2(G)
+	img_out=g[0:m+1,0:n+1]
+	img_out_real=np.uint(img_out.real)
+	plt.imshow(np.abs(img_out_real),cmap='gray')
+	plt.show()
+
+def Unmask(img_test,d,k1,k2):
+
+	m= img_test.shape[0]
+	n= img_test.shape[1]
+	img_test2=np.zeros((m,n))
+	for i in range (m):
+		for j in range (n):
+			img_test2[i,j]=img_test[i,j]
+	plt.imshow(img_test2 , cmap='gray')
+	plt.show()
+		
+	P = 2*m
+	Q= 2*n
+
+
+	#zeros pedding
+	fp= np.zeros((P,Q))
+	for i in range (m):
+		for j in range (n):
+			fp[i,j]=img_test2[i,j]
+
+
+	#DFT & Middle
+	F1= np.fft.fft2(fp)
+	F1=np.fft.fftshift(F1)
+	
+	plt.imshow(np.log(abs(F1)),cmap='gray')
+	plt.show()
+
+	# Laplace's HP Filter's creation
+	Un = np.zeros((P,Q))
+	for u in range (P) :
+		for v in range (Q) :
+			temp=((u-P/2)**2+(v-Q/2)**2)
+			Un[u,v]=1-exp((-temp)**2/(2*d*d)**2)
+
+	# starting filtering
+	G=np.zeros((m,n))
+	G=multiply(F1,k1+k2*Un)
+
+
+	plt.imshow(np.log(abs(G)),cmap='gray')
+	plt.show()
+
+	#IDFT & Middle
+	G=np.fft.ifftshift(G)
+	g= np.fft.ifft2(G)
+	img_out=g[0:m+1,0:n+1]
+	img_out_real=np.uint8(img_out.real)
+	plt.imshow(img_out_real,cmap='gray')
+	plt.show()
+
+img_test= np.array(Image.open('test4 copy.bmp').convert('L'),'i')
+BW_LP(img_test,100,2)
+BW_HP(img_test,100,2)
+GLTF(img_test,100)
+GLTF_HP(img_test,100)
+Lap_HP(img_test,10)
+Unmask(img_test,250,1,1)
